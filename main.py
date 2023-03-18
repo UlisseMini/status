@@ -41,8 +41,8 @@ def get_airtable_day(date: str):
         'filterByFormula': f'DATESTR(Date) = "{date}"',
     }, headers={'Authorization': f'Bearer {AIRTABLE_API_KEY}'})
     resp.raise_for_status()
-    day = resp.json()["records"][0]["fields"]
-    return day
+    records = resp.json()["records"]
+    return records[0]["fields"] if len(records) > 0 else None
 
 
 @st.cache_data(ttl=TTL)
@@ -83,7 +83,7 @@ def show_journal(date: str):
     # TODO: Show past journals, slider for which day to look at
     st.write("## Journal")
     day = get_airtable_day(date)
-    msg = day['Journal'] if day['Date'] == date else "No journal data found :("
+    msg = day['Journal'] if day else "No journal data found :("
     st.write(msg)
 
 
