@@ -52,6 +52,13 @@ def get_toggl_projects():
 
 
 @st.cache_data(ttl=TTL)
+def get_toggl_clients():
+    resp = httpx.get("https://api.track.toggl.com/api/v9/me/clients", auth=(os.environ['TOGGL_API_KEY'], 'api_token'))
+    resp.raise_for_status()
+    return resp.json()
+
+
+@st.cache_data(ttl=TTL)
 def get_airtable_day(date: str):
     resp = httpx.get(f'https://api.airtable.com/v0/appq1TYckaWsk1tgt/Daily', params={
         'maxRecords': 1,
@@ -109,20 +116,23 @@ def show_journal(date: str):
 
 def show_toggl_data(start_date: str, end_date: str):
     st.write("## Time tracking")
-    toggl = get_toggl_day(start_date, end_date)
-    toggl_projects = get_toggl_projects()
+
+    # Multiple choice between "projects" and "clients"
+    grouping = st.radio("Grouping", ("projects", "clients")) or "projects"
+    toggl = get_toggl_day(start_date, end_date, grouping=grouping)
+    toggl_groupings = get_toggl_projects() if grouping == "projects" else get_toggl_clients()
 
     # New schema processing
     data = []
     for group in toggl['groups']:
-        project_id = group['id']
-        project_name = None
-        if project_id is not None:
-            project_name = next((project['name'] for project in toggl_projects if project['id'] == project_id), None)
+        grouping_id = group['id']
+        grouping_name = None
+        if grouping_id is not None:
+            grouping_name = next((group['name'] for group in toggl_groupings if group['id'] == grouping_id), None)
         for sub_group in group['sub_groups']:
             data.append({
-                'project_id': project_id,
-                'project_name': project_name,
+                f'{grouping}_id': grouping_id,
+                f'{grouping}_name': grouping_name,
                 'title': sub_group['title'],
                 'duration': sub_group['seconds'] / 60 / 60
             })
@@ -134,14 +144,14 @@ def show_toggl_data(start_date: str, end_date: str):
         st.write("No time tracking data found :(")
         return
 
-    # Sum over project name
-    df = df.groupby(['project_name']).sum().reset_index()
+    # Sum over group name
+    df = df.groupby([f'{grouping}_name']).sum().reset_index()
 
     # Format duration as hours minutes
     df['formatted_duration'] = df['duration'].apply(lambda x: f"{int(x)}h {int((x - int(x)) * 60)}min")
 
     # Pie chart with plotly
-    fig = px.pie(df[['project_name', 'duration', 'formatted_duration']], values='duration', names='project_name', custom_data=['formatted_duration'])
+    fig = px.pie(df[[f'{grouping}_name', 'duration', 'formatted_duration']], values='duration', names=f'{grouping}_name', custom_data=['formatted_duration'])
     fig.update_traces(hovertemplate='%{label}<br>Duration: %{customdata[0]}<extra></extra>')
 
     st.plotly_chart(fig)
@@ -158,8 +168,8 @@ def main():
 
     show_journal(prev_day_date)
     show_oura_sleep(prev_day_date, date)
-    # show_toggl_data(prev_day_date, prev_day_date)
-    show_toggl_data(date,date)
+
+    show_toggl_data(date, date)
 
 
 if __name__ == '__main__':
