@@ -166,10 +166,10 @@ def main():
     date = st.date_input("Date", datetime.now()).strftime('%Y-%m-%d') # type: ignore
     prev_day_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
 
+    # In order of longest period I have data for, to shortest. Most recently added at the top.
+    show_toggl_data(date, date)
     show_journal(prev_day_date)
     show_oura_sleep(prev_day_date, date)
-
-    show_toggl_data(date, date)
 
 
 if __name__ == '__main__':
