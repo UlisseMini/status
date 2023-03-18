@@ -169,7 +169,7 @@ def main():
     # In order of longest period I have data for, to shortest. Most recently added at the top.
     show_toggl_data(date, date)
     show_journal(prev_day_date)
-    show_oura_sleep(prev_day_date, date)
+    show_oura_sleep(date, date)
 
 
 if __name__ == '__main__':
