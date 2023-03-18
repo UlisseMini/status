@@ -148,7 +148,7 @@ def show_toggl_data(start_date: str, end_date: str):
         return
 
     # Sum over group name
-    df = df.groupby([f'{grouping}_name']).sum().reset_index()
+    df = df.groupby([f'{grouping}_name']).sum(numeric_only=True).reset_index()
 
     # Format duration as hours minutes
     df['formatted_duration'] = df['duration'].apply(lambda x: f"{int(x)}h {int((x - int(x)) * 60)}min")
