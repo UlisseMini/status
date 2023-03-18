@@ -91,6 +91,9 @@ def show_oura_sleep(start_date: str, end_date: str):
 
     oura_data = sleep['data'][0]
 
+    st.write(f"Sleep score for {oura_data['day']} (i.e. sleep from previous night)")
+    # TODO: Show sleep hours, etc. stats
+
     # Sleep Score Gauge
     fig = go.Figure(go.Indicator(
         mode="gauge+number",
