@@ -173,7 +173,7 @@ def main():
             st.session_state.access_token = get_access_token(code)['access_token']
             # TODO: If this fails our token expired, so we should delete it
             st.session_state.user = get_user_info(st.session_state.access_token)
-            # st.experimental_set_query_params()
+            st.experimental_set_query_params()
 
     if not ('user' in st.session_state and st.session_state.user['id'] == "301092081827577866"):
         st.write(f"[Login with discord]({get_login_url()})")
