@@ -5,6 +5,7 @@ import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
 import pandas as pd
+from discord_oauth import get_user_info, get_access_token, get_login_url
 
 AIRTABLE_API_KEY=os.environ['AIRTABLE_API_KEY']
 WEBHOOK_URL=os.environ['WEBHOOK_URL']
@@ -136,7 +137,7 @@ def show_toggl_data(start_date: str, end_date: str):
             data.append({
                 f'{grouping}_id': grouping_id,
                 f'{grouping}_name': grouping_name,
-                'title': sub_group['title'],
+                'title': sub_group.get('title') or '<No title>',
                 'duration': sub_group['seconds'] / 60 / 60
             })
 
@@ -163,7 +164,22 @@ def show_toggl_data(start_date: str, end_date: str):
 
 def main():
     st.title("Uli status")
-    st.write("A dashboard for Uli's daily status, how his life is going, etc.")
+
+    if 'access_token' not in st.session_state:
+        # attempt getting it from ?code= query param
+        code = st.experimental_get_query_params().get('code', None)
+        if code:
+            code = code[0] # because query params are always lists
+            st.session_state.access_token = get_access_token(code)['access_token']
+            # TODO: If this fails our token expired, so we should delete it
+            st.session_state.user = get_user_info(st.session_state.access_token)
+            # st.experimental_set_query_params()
+
+    if not ('user' in st.session_state and st.session_state.user['id'] == "301092081827577866"):
+        st.write(f"[Login with discord]({get_login_url()})")
+        return
+
+    st.write(f"A dashboard for Uli's daily status, how his life is going, etc. Welcome, {st.session_state.user['username'].title()}!")
 
     # Use streamlit to get the date via a date picker
     date = st.date_input("Date", datetime.now()).strftime('%Y-%m-%d') # type: ignore
