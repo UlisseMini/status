@@ -10,6 +10,7 @@ from discord_oauth import get_user_info, get_access_token, get_login_url
 AIRTABLE_API_KEY=os.environ['AIRTABLE_API_KEY']
 WEBHOOK_URL=os.environ['WEBHOOK_URL']
 OURA_API_KEY=os.environ['OURA_API_KEY']
+ALLOWED_DISCORD_IDS = os.environ['ALLOWED_DISCORD_IDS'].split(',')
 TTL = 60*60 # 1 hour
 
 
@@ -175,7 +176,7 @@ def main():
             st.session_state.user = get_user_info(st.session_state.access_token)
             st.experimental_set_query_params()
 
-    if not ('user' in st.session_state and st.session_state.user['id'] == "301092081827577866"):
+    if not ('user' in st.session_state and st.session_state.user['id'] in ALLOWED_DISCORD_IDS):
         st.write(f"[Login with discord]({get_login_url()})")
         return
 
