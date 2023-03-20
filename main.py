@@ -1,6 +1,6 @@
 import os
 import httpx
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
@@ -182,7 +182,9 @@ def main():
     st.write(f"A dashboard for Uli's daily status, how his life is going, etc. Welcome, {st.session_state.user['username'].title()}!")
 
     # Use streamlit to get the date via a date picker
-    date = st.date_input("Date", datetime.now()).strftime('%Y-%m-%d') # type: ignore
+    default_date = datetime.now(timezone(timedelta(hours=-4))).date()
+    date = st.date_input("Date", default_date).strftime('%Y-%m-%d') # type: ignore
+
     prev_day_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
 
     # In order of longest period I have data for, to shortest. Most recently added at the top.
