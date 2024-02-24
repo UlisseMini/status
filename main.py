@@ -183,7 +183,7 @@ def main():
     st.write(f"A dashboard for Uli's daily status, how his life is going, etc. Welcome, {st.session_state.user['username'].title()}!")
 
     # Use streamlit to get the date via a date picker
-    default_date = datetime.now(timezone(timedelta(hours=-4))).date()
+    default_date = datetime.now(timezone(timedelta(hours=-7))).date()
     date = st.date_input("Date", default_date).strftime('%Y-%m-%d') # type: ignore
 
     prev_day_date = (datetime.strptime(date, '%Y-%m-%d') - timedelta(days=1)).strftime('%Y-%m-%d')
