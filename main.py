@@ -173,12 +173,8 @@ def show_toggl_data(start_date: str, end_date: str):
             "title": r["title"],
             "duration": f"{int(r['duration'])}h {int((r['duration'] - int(r['duration'])) * 60)}min"
         }
-        for r in data
+        for r in sorted(data, key=lambda x: x['start'].timestamp())
     ])
-    st.write("Raw toggling data:")
-    st.json(toggl)
-    st.write("Raw toggling groupings data:")
-    st.json(toggl_groupings)
 
 
 
