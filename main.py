@@ -162,7 +162,14 @@ def show_toggl_data(start_date: str, end_date: str):
     st.plotly_chart(fig)
 
     # Also show all the entries in a table
-    st.json(data)
+    st.table([
+        {
+            "project": r["projects_name"],
+            "title": r["title"],
+            "duration": f"{int(r['duration'])}h {int((r['duration'] - int(r['duration'])) * 60)}min"
+        }
+        for r in data
+    ])
 
 
 
