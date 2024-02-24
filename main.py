@@ -167,6 +167,7 @@ def show_toggl_data(start_date: str, end_date: str):
     st.plotly_chart(fig)
 
     # Also show all the entries in a table
+    # TODO: Fix sorting (identical entries are being combined I think)
     st.table([
         {
             "project": r["projects_name"],
