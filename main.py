@@ -162,7 +162,7 @@ def show_toggl_data(start_date: str, end_date: str):
     st.plotly_chart(fig)
 
     # Also show all the entries in a table
-    st.dataframe(data)
+    st.json(data)
 
 
 
