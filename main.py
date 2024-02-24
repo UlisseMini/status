@@ -135,11 +135,16 @@ def show_toggl_data(start_date: str, end_date: str):
         if grouping_id is not None:
             grouping_name = next((group['name'] for group in toggl_groupings if group['id'] == grouping_id), None)
         for sub_group in group['sub_groups']:
+            parsed_start = datetime.strptime(
+                sub_group['local_start'], "%Y-%m-%dT%H:%M:%SZ"
+            )
+
             data.append({
                 f'{grouping}_id': grouping_id,
                 f'{grouping}_name': grouping_name,
                 'title': sub_group.get('title') or '<No title>',
-                'duration': sub_group['seconds'] / 60 / 60
+                'duration': sub_group['seconds'] / 60 / 60,
+                'start': parsed_start,
             })
 
     df = pd.DataFrame(data)
