@@ -170,6 +170,10 @@ def show_toggl_data(start_date: str, end_date: str):
         }
         for r in data
     ])
+    st.write("Raw toggling data:")
+    st.json(toggl)
+    st.write("Raw toggling groupings data:")
+    st.json(toggl_groupings)
 
 
 
